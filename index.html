@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GastroTech</title>
+
+<style>
+/* ============================================================
+   ======== ESTILOS (CSS) - VISUAL DO SISTEMA =================
+   ============================================================ */
+
+/* ====== CONFIGURAÇÃO GERAL ====== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Fundo geral e alinhamento da página */
+body {
+  background-color: rgb(34, 9, 1); /* Tom vinho escuro / preto elegante */
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+  padding-top: 50px;
+}
+
+/* ====== TÍTULOS (h1, h2, h3) ====== */
+h1, h2, h3 {
+  color: #d4af37; /* Cor dourada */
+  text-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+  animation: brilho 3s infinite ease-in-out; /* Efeito de brilho suave */
+}
+
+/* Título principal (logo “GastroTech”) */
+h1 {
+  font-size: 60px;
+  margin-bottom: 40px;
+  letter-spacing: 2px;
+}
+
+/* ====== CONTAINER (cada “tela”) ======
+   Cada tela do sistema (início, mapa, cadastro, etc.) é uma div com esta classe.
+   Só uma aparece de cada vez (controlado pelo JavaScript). */
+.container {
+  position: relative;
+  width: 1106px;
+  min-height: 510px;
+  margin: 0 auto 40px;
+  background-color: rgba(0,0,0,0.7); /* Fundo semitransparente */
+  border: 2px solid #d4af37; /* Borda dourada */
+  border-radius: 15px;
+  box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+  display: none; /* Por padrão oculto */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+}
+
+/* ====== BOTÕES E CAMPOS ====== */
+button, select, input {
+  background-color: rgb(212, 175, 55); /* Dourado */
+  color: #000;
+  border: none;
+  padding: 12px 25px;
+  margin: 10px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+/* Efeito ao passar o mouse sobre botões e selects */
+button:hover, select:hover {
+  background-color: #fff;
+  color: #000;
+  box-shadow: 0 0 20px #d4af37;
+  transform: translateY(-2px);
+}
+
+/* Campos de input */
+input {
+  width: 80%;
+  padding: 10px;
+  text-align: center;
+}
+
+/* ====== MAPA DE MESAS COM IMAGEM DE FUNDO ====== */
+#mapaMesas {
+  position: relative;
+  width: 100%;
+  min-height: 400px;
+  background-image: url('mesas.jpg'); /* nome do arquivo da sua imagem */
+  background-size: cover;      /* Ajusta para preencher o espaço */
+  background-position: center; /* Centraliza a imagem */
+  background-repeat: no-repeat;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+/* Garante que as mesas fiquem por cima da imagem */
+#mapaMesas .mesa {
+  position: absolute; /* Permite posicionar as mesas manualmente */
+}
+
+
+/* ====== MESAS ======
+   Cada mesa é representada como um botão circular (div com classe .mesa)
+*/
+.mesa {
+  display: inline-block;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background-color: rgb(12, 92, 12); /* Verde escuro elegante = disponível */
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  cursor: pointer;
+  opacity: 0.9;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 12px rgba(0, 255, 0, 0.3);
+  margin: 10px;
+}
+
+/* Efeito hover nas mesas */
+.mesa:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+}
+
+/* Mesas ocupadas em vermelho */
+.mesa.ocupada {
+  background-color: #a80000;
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+}
+
+/* Botão de reservar no mapa */
+#btnReservar {
+  margin-top: 20px;
+}
+
+/* ====== ANIMAÇÃO DO TÍTULO ====== */
+@keyframes brilho {
+  0% { text-shadow: 0 0 10px rgba(34, 9, 1); }
+  50% { text-shadow: 0 0 20px rgb(246, 170, 28); }
+  100% { text-shadow: 0 0 10px rgba(34, 9, 1); }
+}
+
+/* ====== RESPONSIVIDADE ====== */
+@media (max-width: 1200px) {
+  .container {
+    width: 90%;
+    height: auto;
+  }
+  .mesa {
+    width: 50px;
+    height: 50px;
+    font-size: 16px;
+  }
+  button {
+    font-size: 15px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ============================================================
+     ============ TELAS (HTML) ==================================
+     Cada seção é uma "tela" exibida conforme a navegação.
+     ============================================================ -->
+
+<!-- ===== TELA INICIAL ===== -->
+<div id="inicio" class="container" style="display:flex;">
+    <h1>GastroTech</h1>
+    <button onclick="irPara('mapa')">Reservar</button>
+    <button onclick="irPara('loginConsulta')">Consultar Reserva</button>
+</div>
+
+<!-- ===== TELA DO MAPA DE MESAS ===== -->
+<div id="mapa" class="container">
+    <h2>Escolha o horário</h2>
+    <!-- Dropdown de horários -->
+    <select id="horario" onchange="mostrarMesas()">
+        <option value="">Selecione um horário</option>
+        <option>10h às 11h</option>
+        <option>11h às 12h</option>
+        <option>12h às 13h</option>
+        <option>13h às 14h</option>
+        <option>14h às 15h</option>
+    </select>
+
+    <!-- Área onde as mesas serão exibidas dinamicamente -->
+    <div id="mapaMesas"></div>
+
+    <!-- Botões -->
+    <button id="btnReservar" style="display:none;" onclick="irPara('cadastro')">Reservar</button>
+    <button onclick="irPara('inicio')">Voltar</button>
+</div>
+
+<!-- ===== TELA DE CADASTRO ===== -->
+<div id="cadastro" class="container">
+    <h2>Cadastro</h2>
+    <input type="text" id="nome" placeholder="Nome"><br>
+    <input type="email" id="email" placeholder="Email"><br>
+    <input type="password" id="senha" placeholder="Senha"><br>
+    <button onclick="finalizarReserva()">Finalizar Reserva</button>
+</div>
+
+<!-- ===== TELA DE AGRADECIMENTO ===== -->
+<div id="agradecimento" class="container">
+    <h2>Reserva Confirmada!</h2>
+    <p id="msgAgradecimento"></p>
+    <button onclick="irPara('inicio')">Voltar ao Início</button>
+</div>
+
+<!-- ===== TELA DE LOGIN PARA CONSULTAR RESERVA ===== -->
+<div id="loginConsulta" class="container">
+    <h2>Consultar Reserva</h2>
+    <input type="email" id="emailLogin" placeholder="Email"><br>
+    <input type="password" id="senhaLogin" placeholder="Senha"><br>
+    <button onclick="consultarReserva()">Consultar</button>
+    <button onclick="irPara('inicio')">Voltar</button>
+</div>
+
+<!-- ===== TELA QUE MOSTRA DADOS DA RESERVA CONSULTADA ===== -->
+<div id="dadosReserva" class="container">
+    <h2>Minha Reserva</h2>
+    <p id="infoReserva"></p>
+    <button onclick="irPara('inicio')">Voltar</button>
+</div>
+
+<!-- ============================================================
+     ============ JAVASCRIPT ====================================
+     Controla a navegação, reservas e lógica do sistema.
+     ============================================================ -->
+<script>
+    /* ======= DADOS PRINCIPAIS ======= */
+    const horarios = ["10h às 11h","11h às 12h","12h às 13h","13h às 14h","14h às 15h"];
+    let mesasPorHorario = {}; // Armazena status de ocupação por horário
+    let reservas = [];        // Armazena todas as reservas feitas
+    let mesaEscolhida = null; // Índice da mesa selecionada
+    let horarioEscolhido = null; // Horário atual selecionado
+
+    // Inicializa 8 mesas (false = disponíveis) para cada horário
+    horarios.forEach(h => {
+        mesasPorHorario[h] = Array(8).fill(false);
+    });
+
+    /* ======= FUNÇÃO: TROCAR DE TELA ======= */
+    function irPara(telaId){
+        // Esconde todas as telas
+        document.querySelectorAll('.container').forEach(div => div.style.display = 'none');
+        // Mostra apenas a selecionada
+        document.getElementById(telaId).style.display = 'flex';
+
+        // Se for a tela do mapa, atualiza o layout
+        if(telaId === "mapa"){
+            document.getElementById("btnReservar").style.display = "none";
+            mostrarMesas();
+        }
+    }
+
+    /* ======= FUNÇÃO: MOSTRAR MESAS =======
+       Atualiza as mesas conforme o horário selecionado */
+    function mostrarMesas(){
+  const horario = document.getElementById("horario").value;
+  const div = document.getElementById("mapaMesas");
+  div.innerHTML = "";
+  horarioEscolhido = horario;
+  if(!horario) return;
+
+  // Posições fixas das mesas no mapa (x, y em pixels)
+  const posicoes = [
+    {x: 100, y: 80},
+    {x: 250, y: 120},
+    {x: 400, y: 60},
+    {x: 550, y: 200},
+    {x: 700, y: 100},
+    {x: 150, y: 250},
+    {x: 350, y: 300},
+    {x: 600, y: 280}
+  ];
+
+  // Cria visualmente cada mesa
+  mesasPorHorario[horario].forEach((ocupada, i) => {
+    const mesa = document.createElement("div");
+    mesa.className = "mesa " + (ocupada ? "ocupada" : "disponivel");
+    mesa.innerText = i+1;
+    mesa.style.left = posicoes[i].x + "px";
+    mesa.style.top = posicoes[i].y + "px";
+    mesa.onclick = () => selecionarMesa(i);
+    div.appendChild(mesa);
+  });
+}
+
+
+    /* ======= FUNÇÃO: SELECIONAR MESA ======= */
+    function selecionarMesa(indice){
+        if(mesasPorHorario[horarioEscolhido][indice]) {
+            alert("Mesa já ocupada!");
+            return;
+        }
+        mesaEscolhida = indice;
+        // Remove bordas antigas
+        document.querySelectorAll(".mesa").forEach(m => m.style.border = "2px solid rgba(255,255,255,0.3)");
+        // Destaca a mesa escolhida
+        document.querySelectorAll(".mesa")[indice].style.border = "3px solid #d4af37";
+        // Mostra o botão “Reservar”
+        document.getElementById("btnReservar").style.display = "inline-block";
+    }
+
+    /* ======= FUNÇÃO: FINALIZAR RESERVA ======= */
+    function finalizarReserva(){
+        const nome = document.getElementById("nome").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const senha = document.getElementById("senha").value.trim();
+
+        // Verifica se todos os campos foram preenchidos
+        if(!nome || !email || !senha){
+            alert("Preencha todos os campos!");
+            return;
+        }
+
+        // Gera código único da reserva
+        const codigo = "GT-" + Math.floor(100000 + Math.random() * 900000);
+
+        // Marca mesa como ocupada
+        mesasPorHorario[horarioEscolhido][mesaEscolhida] = true;
+
+        // Armazena reserva
+        reservas.push({
+            nome, email, senha,
+            mesa: mesaEscolhida+1,
+            horario: horarioEscolhido,
+            codigo
+        });
+
+        // Mostra mensagem de confirmação
+        document.getElementById("msgAgradecimento").innerHTML =
+            `Obrigado, <b>${nome}</b>!<br>
+            Sua mesa: <b>${mesaEscolhida+1}</b><br>
+            Horário: <b>${horarioEscolhido}</b><br>
+            Código da reserva: <b>${codigo}</b>`;
+
+        // Vai para a tela de agradecimento
+        irPara("agradecimento");
+    }
+
+    /* ======= FUNÇÃO: CONSULTAR RESERVA EXISTENTE ======= */
+    function consultarReserva(){
+        const email = document.getElementById("emailLogin").value.trim();
+        const senha = document.getElementById("senhaLogin").value.trim();
+
+        // Procura reserva correspondente
+        const reserva = reservas.find(r => r.email === email && r.senha === senha);
+
+        if(!reserva){
+            alert("Reserva não encontrada!");
+            return;
+        }
+
+        // Exibe informações da reserva
+        document.getElementById("infoReserva").innerHTML =
+            `Nome: <b>${reserva.nome}</b><br>
+             Mesa: <b>${reserva.mesa}</b><br>
+             Horário: <b>${reserva.horario}</b><br>
+             Código: <b>${reserva.codigo}</b>`;
+
+        irPara("dadosReserva");
+    }
+</script>
+</body>
+</html>
