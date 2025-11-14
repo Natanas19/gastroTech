@@ -194,7 +194,7 @@ input {
     <h2>Escolha o horário</h2>
     <!-- Dropdown de horários -->
     <select id="horario" onchange="mostrarMesas()">
-        <option value="">Selecione um horário</option>
+        <!-- <option value="">Selecione um horário</option>  -->
         <option>10h às 11h</option>
         <option>11h às 12h</option>
         <option>12h às 13h</option>
@@ -256,7 +256,7 @@ input {
 
     // Inicializa 8 mesas (false = disponíveis) para cada horário
     horarios.forEach(h => {
-        mesasPorHorario[h] = Array(8).fill(false);
+        mesasPorHorario[h] = Array(12).fill(false);
     });
 
     /* ======= FUNÇÃO: TROCAR DE TELA ======= */
@@ -284,14 +284,18 @@ input {
 
   // Posições fixas das mesas no mapa (x, y em pixels)
   const posicoes = [
-    {x: 100, y: 80},
-    {x: 250, y: 120},
-    {x: 400, y: 60},
-    {x: 550, y: 200},
-    {x: 700, y: 100},
-    {x: 150, y: 250},
-    {x: 350, y: 300},
-    {x: 600, y: 280}
+    {x: 126, y: 10},
+    {x: 264, y: 10},
+    {x: 400, y: 10},
+    {x: 663, y: 10},
+    {x: 800, y: 10},
+    {x: 928, y: 10},
+    {x: 126, y: 202},
+    {x: 264, y: 202},
+    {x: 400, y: 202},
+    {x: 655, y: 202},
+    {x: 792, y: 202},
+    {x: 928, y: 202},
   ];
 
   // Cria visualmente cada mesa
