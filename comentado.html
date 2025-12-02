@@ -1,0 +1,169 @@
+<!DOCTYPE html> <!-- Declara que o documento é HTML5 -->
+<html lang="pt-BR"> <!-- Define idioma da página -->
+
+<head>
+<meta charset="UTF-8"> <!-- Garante suporte a acentos -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Torna responsivo -->
+<title>GastroTech</title> <!-- Nome exibido na aba do navegador -->
+
+<style>
+/* ============================================================
+   ======== ESTILOS (CSS) — Aparência visual da página ========
+   ============================================================ */
+
+/* Reset básico para remover margens e padronizar o layout */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif; /* Fonte padrão */
+}
+
+/* Estilização geral do corpo da página */
+body {
+  background-color: rgb(34, 9, 1); /* Fundo escuro */
+  color: #fff; /* Texto branco */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh; /* Altura mínima da tela */
+  text-align: center;
+  padding-top: 50px;
+}
+
+/* Estilo dos títulos */
+h1, h2, h3 {
+  color: #d4af37; /* Dourado */
+  text-shadow: 0 0 15px rgba(212, 175, 55, 0.5); /* Brilho */
+  animation: brilho 3s infinite; /* Animação */
+}
+
+/* Título principal */
+h1 {
+  font-size: 60px;
+  margin-bottom: 40px;
+  letter-spacing: 2px; /* Espaçamento entre letras */
+}
+
+/* Containers das telas da aplicação */
+.container {
+  position: relative;
+  width: 1106px; /* Tamanho padrão */
+  min-height: 510px;
+  margin: 0 auto 40px; /* Centralizado */
+  background-color: rgba(0,0,0,0.7); /* Fundo semi-transparente */
+  border: 2px solid #d4af37; /* Borda dourada */
+  border-radius: 15px;
+  box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+  display: none; /* Oculto até ser aberto via JS */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+}
+
+/* Estilo geral de botões, selects e inputs */
+button, select, input {
+  background-color: rgb(212, 175, 55); /* Dourado */
+  color: #000;
+  border: none;
+  padding: 12px 25px;
+  margin: 10px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: .3s;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+/* Animação de hover */
+button:hover, select:hover {
+  background-color: #fff;
+  box-shadow: 0 0 20px #d4af37;
+  transform: translateY(-2px);
+}
+
+/* Inputs mais largos */
+input {
+  width: 80%;
+  padding: 10px;
+  text-align: center;
+}
+
+/* ============================================================
+   ========== MAPA DE MESAS (layout com imagem de fundo) ======
+   ============================================================ */
+
+#mapaMesas {
+  position: relative;
+  width: 100%;
+  background-image: url('mesas.jpg'); /* Planta baixa */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 10px;
+  margin-top: 20px;
+  aspect-ratio: 1106 / 510; /* Mantém proporção da imagem */
+}
+
+/* Mesas dentro do mapa são posicionadas por porcentagem */
+#mapaMesas .mesa {
+  position: absolute;
+}
+
+/* Estilo das mesas (bolinhas verdes/redondas) */
+.mesa {
+  width: 6%;
+  aspect-ratio: 1/1; /* Mantém formato circular */
+  border-radius: 50%;
+  background-color: rgb(12, 92, 12); /* Verde disponível */
+  border: 2px solid rgba(255,255,255,0.3);
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  opacity: 0.9;
+  transition: .3s;
+  box-shadow: 0 0 12px rgba(0,255,0,0.3);
+}
+
+/* Efeito de hover na mesa */
+.mesa:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 20px rgba(0,255,0,0.6);
+}
+
+/* Mesa ocupada fica vermelha */
+.mesa.ocupada {
+  background-color: #a80000;
+  box-shadow: 0 0 20px rgba(255,0,0,0.6);
+}
+
+/* Botão de reservar abaixo das mesas */
+#btnReservar {
+  margin-top: 20px;
+}
+
+/* Animação do brilho dos textos */
+@keyframes brilho {
+  0% { text-shadow: 0 0 10px rgba(34, 9, 1); }
+  50% { text-shadow: 0 0 20px rgb(246, 170, 28); }
+  100% { text-shadow: 0 0 10px rgba(34, 9, 1); }
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 1200px) {
+  .container {
+    width: 94%;
+  }
+
+  h1 { font-size: 45px; }
+
+  .mesa {
+    font-size: 13px;
+  }
+}
+</style>
+</head>
