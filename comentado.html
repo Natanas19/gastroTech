@@ -1,71 +1,70 @@
-<!DOCTYPE html> <!-- Declara que o documento é HTML5 -->
-<html lang="pt-BR"> <!-- Define idioma da página -->
-
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
-<meta charset="UTF-8"> <!-- Garante suporte a acentos -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Torna responsivo -->
-<title>GastroTech</title> <!-- Nome exibido na aba do navegador -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GastroTech</title>
 
 <style>
 /* ============================================================
-   ======== ESTILOS (CSS) — Aparência visual da página ========
+   ======== ESTILOS (CSS) =====================================
    ============================================================ */
 
-/* Reset básico para remover margens e padronizar o layout */
+/* Reset padrão e fonte */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Poppins', sans-serif; /* Fonte padrão */
+  font-family: 'Poppins', sans-serif;
 }
 
-/* Estilização geral do corpo da página */
+/* Estilo geral do corpo da página */
 body {
-  background-color: rgb(34, 9, 1); /* Fundo escuro */
-  color: #fff; /* Texto branco */
+  background-color: rgb(34, 9, 1); /* fundo vinho escuro */
+  color: #fff;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh; /* Altura mínima da tela */
+  min-height: 100vh;
   text-align: center;
   padding-top: 50px;
 }
 
-/* Estilo dos títulos */
+/* Estilos dos títulos */
 h1, h2, h3 {
-  color: #d4af37; /* Dourado */
-  text-shadow: 0 0 15px rgba(212, 175, 55, 0.5); /* Brilho */
-  animation: brilho 3s infinite; /* Animação */
+  color: #d4af37; /* dourado */
+  text-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+  animation: brilho 3s infinite ease-in-out; /* efeito de brilho */
 }
 
 /* Título principal */
 h1 {
   font-size: 60px;
   margin-bottom: 40px;
-  letter-spacing: 2px; /* Espaçamento entre letras */
+  letter-spacing: 2px;
 }
 
-/* Containers das telas da aplicação */
+/* Container das telas do sistema */
 .container {
   position: relative;
-  width: 1106px; /* Tamanho padrão */
+  width: 1106px; /* tamanho igual ao da imagem do mapa */
   min-height: 510px;
-  margin: 0 auto 40px; /* Centralizado */
-  background-color: rgba(0,0,0,0.7); /* Fundo semi-transparente */
-  border: 2px solid #d4af37; /* Borda dourada */
+  margin: 0 auto 40px;
+  background-color: rgba(0,0,0,0.7); /* fundo translúcido */
+  border: 2px solid #d4af37;
   border-radius: 15px;
   box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
-  display: none; /* Oculto até ser aberto via JS */
+  display: none; /* todas começam invisíveis */
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 30px;
 }
 
-/* Estilo geral de botões, selects e inputs */
+/* Botões, selects e inputs */
 button, select, input {
-  background-color: rgb(212, 175, 55); /* Dourado */
+  background-color: rgb(212, 175, 55);
   color: #000;
   border: none;
   padding: 12px 25px;
@@ -78,14 +77,14 @@ button, select, input {
   box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
 }
 
-/* Animação de hover */
+/* Efeito hover dos botões */
 button:hover, select:hover {
   background-color: #fff;
   box-shadow: 0 0 20px #d4af37;
   transform: translateY(-2px);
 }
 
-/* Inputs mais largos */
+/* Input de texto */
 input {
   width: 80%;
   padding: 10px;
@@ -93,32 +92,33 @@ input {
 }
 
 /* ============================================================
-   ========== MAPA DE MESAS (layout com imagem de fundo) ======
+   ================ MAPA DE MESAS RESPONSIVO ==================
    ============================================================ */
 
+/* Área do mapa usando imagem como fundo */
 #mapaMesas {
   position: relative;
   width: 100%;
-  background-image: url('mesas.jpg'); /* Planta baixa */
+  background-image: url('mesas.jpg'); /* imagem de fundo */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   border-radius: 10px;
   margin-top: 20px;
-  aspect-ratio: 1106 / 510; /* Mantém proporção da imagem */
+  aspect-ratio: 1106 / 510; /* mesma proporção da imagem */
 }
 
-/* Mesas dentro do mapa são posicionadas por porcentagem */
+/* Garante que todas mesas sejam absolutas */
 #mapaMesas .mesa {
   position: absolute;
 }
 
-/* Estilo das mesas (bolinhas verdes/redondas) */
+/* Estilo visual das mesas */
 .mesa {
   width: 6%;
-  aspect-ratio: 1/1; /* Mantém formato circular */
+  aspect-ratio: 1/1;
   border-radius: 50%;
-  background-color: rgb(12, 92, 12); /* Verde disponível */
+  background-color: rgb(12, 92, 12); /* verde = disponível */
   border: 2px solid rgba(255,255,255,0.3);
   color: white;
   font-weight: bold;
@@ -129,37 +129,39 @@ input {
   box-shadow: 0 0 12px rgba(0,255,0,0.3);
 }
 
-/* Efeito de hover na mesa */
+/* Efeito hover das mesas */
 .mesa:hover {
   transform: scale(1.15);
   box-shadow: 0 0 20px rgba(0,255,0,0.6);
 }
 
-/* Mesa ocupada fica vermelha */
+/* Mesa ocupada em vermelho */
 .mesa.ocupada {
   background-color: #a80000;
   box-shadow: 0 0 20px rgba(255,0,0,0.6);
 }
 
-/* Botão de reservar abaixo das mesas */
+/* Margem do botão Reservar */
 #btnReservar {
   margin-top: 20px;
 }
 
-/* Animação do brilho dos textos */
+/* Animação do brilho dos títulos */
 @keyframes brilho {
   0% { text-shadow: 0 0 10px rgba(34, 9, 1); }
   50% { text-shadow: 0 0 20px rgb(246, 170, 28); }
   100% { text-shadow: 0 0 10px rgba(34, 9, 1); }
 }
 
-/* Responsividade para telas menores */
+/* Responsividade */
 @media (max-width: 1200px) {
   .container {
     width: 94%;
   }
 
-  h1 { font-size: 45px; }
+  h1 {
+    font-size: 45px;
+  }
 
   .mesa {
     font-size: 13px;
@@ -167,3 +169,214 @@ input {
 }
 </style>
 </head>
+
+<body>
+
+<!-- ============================================================
+     ===================== TELAS DO SISTEMA ======================
+     ============================================================ -->
+
+<!-- Tela inicial -->
+<div id="inicio" class="container" style="display:flex;">
+    <h1>GastroTech</h1>
+    <button onclick="irPara('mapa')">Reservar</button>
+    <button onclick="irPara('loginConsulta')">Consultar Reserva</button>
+</div>
+
+<!-- Tela do mapa de mesas -->
+<div id="mapa" class="container">
+    <h2>Escolha o horário</h2>
+
+    <!-- Seletor de horários -->
+    <select id="horario" onchange="mostrarMesas()">
+        <option>10h às 11h</option>
+        <option>11h às 12h</option>
+        <option>12h às 13h</option>
+        <option>13h às 14h</option>
+        <option>14h às 15h</option>
+    </select>
+
+    <!-- Div que recebe as mesas dinamicamente -->
+    <div id="mapaMesas"></div>
+
+    <!-- Botão só aparece após selecionar uma mesa -->
+    <button id="btnReservar" style="display:none;" onclick="irPara('cadastro')">Reservar</button>
+
+    <button onclick="irPara('inicio')">Voltar</button>
+</div>
+
+<!-- Tela de cadastro -->
+<div id="cadastro" class="container">
+    <h2>Cadastro</h2>
+    <input type="text" id="nome" placeholder="Nome"><br>
+    <input type="email" id="email" placeholder="Email"><br>
+    <input type="password" id="senha" placeholder="Senha"><br>
+    <button onclick="finalizarReserva()">Finalizar Reserva</button>
+</div>
+
+<!-- Tela de confirmação -->
+<div id="agradecimento" class="container">
+    <h2>Reserva Confirmada!</h2>
+    <p id="msgAgradecimento"></p>
+    <button onclick="irPara('inicio')">Voltar ao Início</button>
+</div>
+
+<!-- Tela de login para consulta -->
+<div id="loginConsulta" class="container">
+    <h2>Consultar Reserva</h2>
+    <input type="email" id="emailLogin" placeholder="Email"><br>
+    <input type="password" id="senhaLogin" placeholder="Senha"><br>
+    <button onclick="consultarReserva()">Consultar</button>
+    <button onclick="irPara('inicio')">Voltar</button>
+</div>
+
+<!-- Tela que mostra dados da reserva -->
+<div id="dadosReserva" class="container">
+    <h2>Minha Reserva</h2>
+    <p id="infoReserva"></p>
+    <button onclick="irPara('inicio')">Voltar</button>
+</div>
+
+<!-- ============================================================
+     ===================== JAVASCRIPT ===========================
+     ============================================================ -->
+<script>
+
+/* ---------- LISTA DE HORÁRIOS DISPONÍVEIS ---------- */
+const horarios = ["10h às 11h","11h às 12h","12h às 13h","13h às 14h","14h às 15h"];
+
+/* Objetos principais do sistema */
+let mesasPorHorario = {};   // guarda mesas ocupadas/livres por horário
+let reservas = [];          // guarda reservas cadastradas
+let mesaEscolhida = null;   // número da mesa escolhida
+let horarioEscolhido = null;// horário escolhido
+
+/* Criar 12 mesas para cada horário (todas vazias no início) */
+horarios.forEach(h => mesasPorHorario[h] = Array(12).fill(false));
+
+/* ---------- Função para alternar telas ---------- */
+function irPara(telaId){
+    document.querySelectorAll('.container').forEach(t => t.style.display = "none");
+    document.getElementById(telaId).style.display = "flex";
+
+    if(telaId === "mapa"){
+        document.getElementById("btnReservar").style.display = "none";
+        mostrarMesas(); // atualiza o mapa
+    }
+}
+
+/* ---------- Mostrar mesas no mapa ---------- */
+function mostrarMesas(){
+    const horario = document.getElementById("horario").value;
+    const div = document.getElementById("mapaMesas");
+    div.innerHTML = ""; // limpa mapa
+    horarioEscolhido = horario;
+
+    /* Posições exatas das mesas no mapa */
+    const pos = [
+        {x: 13, y: 12.3}, {x: 26.2, y: 12.3}, {x: 39.4, y: 12.3},
+        {x: 64.5, y: 12.3}, {x: 77.7, y: 12.3}, {x: 90, y: 12.3},
+
+        {x: 13, y: 52.5}, {x: 26.2, y: 52.5}, {x: 39.4, y: 52.5},
+        {x: 63.6, y: 52.5}, {x: 76.8, y: 52.5}, {x: 90, y: 52.5},
+    ];
+
+    /* Monta cada mesa visualmente */
+    mesasPorHorario[horario].forEach((ocupada, i) => {
+        const mesa = document.createElement("div");
+        mesa.className = "mesa " + (ocupada ? "ocupada" : "disponivel");
+        mesa.innerText = i + 1; // mostra número da mesa
+
+        mesa.style.left = pos[i].x + "%";  // deixa as indicações de mesa responsivo (tamanho proporcional a tela)
+        mesa.style.top  = pos[i].y + "%";
+
+        mesa.onclick = () => selecionarMesa(i);
+
+        div.appendChild(mesa);
+    });
+}
+
+/* ---------- Seleção de mesa ---------- */
+function selecionarMesa(i){
+    if(mesasPorHorario[horarioEscolhido][i]){
+        alert("Mesa ocupada!");
+        return;
+    }
+
+    mesaEscolhida = i;
+
+    /* Remove destaque anterior */
+    document.querySelectorAll(".mesa").forEach(m => 
+        m.style.border = "2px solid rgba(255,255,255,0.3)"
+    );
+
+    /* Destaca mesa selecionada */
+    document.querySelectorAll(".mesa")[i].style.border = "3px solid #d4af37";
+
+    /* Libera botão Reservar */
+    document.getElementById("btnReservar").style.display = "inline-block";
+}
+
+/* ---------- Finalizar e cadastrar reserva ---------- */
+function finalizarReserva(){
+    const nome  = document.getElementById("nome").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const senha = document.getElementById("senha").value.trim();
+
+    if(!nome || !email || !senha){
+        alert("Preencha tudo!");
+        return;
+    }
+
+    /* Código único da reserva */
+    const codigo = "GT-" + Math.floor(100000 + Math.random()*900000);
+
+    /* Marca a mesa como ocupada */
+    mesasPorHorario[horarioEscolhido][mesaEscolhida] = true;
+
+    /* Grava a reserva na memória */
+    reservas.push({
+        nome, email, senha,
+        mesa: mesaEscolhida+1,
+        horario: horarioEscolhido,
+        codigo
+    });
+
+    /* Mensagem na tela */
+    document.getElementById("msgAgradecimento").innerHTML = `
+        Obrigado, <b>${nome}</b>!<br>
+        Mesa: <b>${mesaEscolhida+1}</b><br>
+        Horário: <b>${horarioEscolhido}</b><br>
+        Código: <b>${codigo}</b>
+    `;
+
+    irPara("agradecimento");
+}
+
+/* ---------- Consulta reserva ---------- */
+function consultarReserva(){
+    const email = emailLogin.value.trim();
+    const senha = senhaLogin.value.trim();
+
+    /* Procura reserva correspondente */
+    const reserva = reservas.find(r => r.email == email && r.senha == senha);
+
+    if(!reserva){
+        alert("Reserva não encontrada!");
+        return;
+    }
+
+    /* Mostra informações */
+    infoReserva.innerHTML = `
+        Nome: <b>${reserva.nome}</b><br>
+        Mesa: <b>${reserva.mesa}</b><br>
+        Horário: <b>${reserva.horario}</b><br>
+        Código: <b>${reserva.codigo}</b>
+    `;
+
+    irPara("dadosReserva");
+}
+
+</script>
+</body>
+</html>
