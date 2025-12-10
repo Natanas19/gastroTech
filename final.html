@@ -41,6 +41,7 @@ h1 {
   letter-spacing: 2px;
 }
 
+/* Contêiner padrão SPA */
 .container {
   position: relative;
   width: 1106px;
@@ -90,7 +91,7 @@ input {
 #mapaMesas, #mapaMesasEdicao {
   position: relative;
   width: 100%;
-  background-image: url('mesas.jpg'); /* mantenha sua imagem mesas.jpg na mesma pasta */
+  background-image: url('mesas.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -99,7 +100,6 @@ input {
   aspect-ratio: 1106 / 510;
 }
 
-/* Mesas posicionadas por porcentagem */
 #mapaMesas .mesa, #mapaMesasEdicao .mesa {
   position: absolute;
 }
@@ -140,17 +140,9 @@ input {
 }
 
 @media (max-width: 1200px) {
-  .container {
-    width: 94%;
-  }
-
-  h1 {
-    font-size: 45px;
-  }
-
-  .mesa {
-    font-size: 13px;
-  }
+  .container { width: 94%; }
+  h1 { font-size: 45px; }
+  .mesa { font-size: 13px; }
 }
 </style>
 </head>
@@ -164,15 +156,48 @@ input {
 <!-- Tela Inicial -->
 <div id="inicio" class="container" style="display:flex;">
     <h1>GastroTech</h1>
+
     <button onclick="irPara('mapa')">Reservar</button>
     <button onclick="irPara('loginConsulta')">Consultar Reserva</button>
+
+    <!-- NOVO BOTÃO ADMIN -->
+    <button onclick="irPara('adminLogin')">Admin</button>
 </div>
 
-<!-- Tela Mapa para Reservar -->
+<!-- =================== TELA LOGIN ADMIN =================== -->
+<div id="adminLogin" class="container">
+    <h2>Área Administrativa</h2>
+
+    <input type="text" id="admUser" placeholder="Usuário"><br>
+    <input type="password" id="admPass" placeholder="Senha"><br>
+
+    <button onclick="loginAdmin()">Entrar</button>
+    <button onclick="irPara('inicio')">Voltar</button>
+</div>
+
+<!-- =================== TELA ADMIN PRINCIPAL =================== -->
+<div id="adminPainel" class="container">
+    <h2>Reservas por Horário</h2>
+
+    <select id="adminHorarios" onchange="listarReservasHorario()">
+        <option value="" disabled selected>Selecione um horário</option>
+        <option>10h às 11h</option>
+        <option>11h às 12h</option>
+        <option>12h às 13h</option>
+        <option>13h às 14h</option>
+        <option>14h às 15h</option>
+    </select>
+
+    <div id="listaAdmin" style="margin-top:20px; font-size:18px;"></div>
+
+    <button onclick="irPara('inicio')">Voltar ao Início</button>
+</div>
+
+<!-- =================== TELA MAPA =================== -->
 <div id="mapa" class="container">
     <h2>Escolha o horário</h2>
 
-    <select id="horario" onchange="mostrarMesas()"> <!--DORPDOWN-->
+    <select id="horario" onchange="mostrarMesas()">
         <option>10h às 11h</option>
         <option>11h às 12h</option>
         <option>12h às 13h</option>
@@ -186,7 +211,7 @@ input {
     <button onclick="irPara('inicio')">Voltar</button>
 </div>
 
-<!-- Tela Cadastro -->
+<!-- =================== CADASTRO =================== -->
 <div id="cadastro" class="container">
     <h2>Cadastro</h2>
     <input type="text" id="nome" placeholder="Nome"><br>
@@ -195,14 +220,14 @@ input {
     <button onclick="finalizarReserva()">Finalizar Reserva</button>
 </div>
 
-<!-- Tela Agradecimento (após reservar) -->
+<!-- =================== TELA DE AGRADECIMENTO =================== -->
 <div id="agradecimento" class="container">
     <h2>Reserva Confirmada!</h2>
     <p id="msgAgradecimento"></p>
     <button onclick="irPara('inicio')">Voltar ao Início</button>
 </div>
 
-<!-- Tela Login para Consulta -->
+<!-- =================== LOGIN CONSULTA =================== -->
 <div id="loginConsulta" class="container">
     <h2>Consultar Reserva</h2>
     <input type="email" id="emailLogin" placeholder="Email"><br>
@@ -211,26 +236,23 @@ input {
     <button onclick="irPara('inicio')">Voltar</button>
 </div>
 
-<!-- Tela Dados da Reserva (após consultar) -->
+<!-- =================== DADOS DA RESERVA =================== -->
 <div id="dadosReserva" class="container">
     <h2>Minha Reserva</h2>
     <p id="infoReserva"></p>
 
-    <!-- Botões para Editar e Cancelar surgem aqui -->
     <button id="btnEditar" onclick="abrirEdicao()" style="display:none;">Editar Reserva</button>
     <button id="btnCancelar" onclick="cancelarReserva()" style="display:none;">Cancelar Reserva</button>
 
     <button onclick="irPara('inicio')">Voltar</button>
 </div>
 
-<!-- Tela de Edição (com mapa para escolher nova mesa) -->
+<!-- =================== EDITAR RESERVA =================== -->
 <div id="editarReserva" class="container">
     <h2>Editar Reserva</h2>
 
-    <!-- Nome editável -->
     <input type="text" id="editNome" placeholder="Nome"><br>
 
-    <!-- Horários (ao mudar, atualiza mapa de edição) -->
     <select id="editHorario" onchange="mostrarMesasEdicao()">
         <option>10h às 11h</option>
         <option>11h às 12h</option>
@@ -239,7 +261,6 @@ input {
         <option>14h às 15h</option>
     </select>
 
-    <!-- Mapa para edição -->
     <div id="mapaMesasEdicao"></div>
 
     <button onclick="salvarEdicao()">Salvar Alterações</button>
@@ -247,79 +268,62 @@ input {
 </div>
 
 <!-- ============================================================
-     ===================== JAVASCRIPT ===========================
+     ===================== JAVASCRIPT ============================
      ============================================================ -->
 <script>
+
 /* ---------------- Variáveis globais ---------------- */
 
-// Horários disponíveis
 const horarios = ["10h às 11h","11h às 12h","12h às 13h","13h às 14h","14h às 15h"];
 
-// Estruturas de dados
-let mesasPorHorario = {}; // objeto { horario: [bool,bool,...] } onde true = ocupada
-let reservas = [];        // array de objetos de reserva
-let mesaEscolhida = null; // índice da mesa durante nova reserva (0-based)
-let horarioEscolhido = null; // horário escolhido durante nova reserva
-let reservaAtual = null;  // reserva encontrada na consulta (objeto) usada para editar/cancelar
+let mesasPorHorario = {};
+let reservas = [];
 
-// Variáveis de edição
-let selectedMesaEdit = null; // índice da mesa selecionada na edição (0-based)
+let mesaEscolhida = null;
+let horarioEscolhido = null;
+let reservaAtual = null;
 
-/* ---------------- Carregar do localStorage ---------------- */
+let selectedMesaEdit = null;
+
+/* ---------------- Carregar do LocalStorage ---------------- */
 function carregarDados() {
-    const dadosMesas = localStorage.getItem("mesasPorHorario");
-    const dadosReservas = localStorage.getItem("reservas");
+    mesasPorHorario = JSON.parse(localStorage.getItem("mesasPorHorario")) || {};
+    reservas = JSON.parse(localStorage.getItem("reservas")) || [];
 
-    if(dadosMesas){
-        mesasPorHorario = JSON.parse(dadosMesas);
-    } else {
-        // Inicializa cada horário com 12 mesas livres (false)
-        horarios.forEach(h => mesasPorHorario[h] = Array(12).fill(false));
-    }
-
-    if(dadosReservas){
-        reservas = JSON.parse(dadosReservas);
-    } else {
-        reservas = [];
-    }
+    horarios.forEach(h => {
+        if (!mesasPorHorario[h]) mesasPorHorario[h] = Array(12).fill(false);
+    });
 }
 carregarDados();
 
-/* ---------------- Salvar no localStorage ---------------- */
-function salvarDados(){
+function salvarDados() {
     localStorage.setItem("mesasPorHorario", JSON.stringify(mesasPorHorario));
     localStorage.setItem("reservas", JSON.stringify(reservas));
 }
 
-/* ---------------- Função para trocar de tela ---------------- */
-function irPara(telaId){
-    // esconde todas as telas
+/* ---------------- Navegação SPA ---------------- */
+function irPara(tela) {
     document.querySelectorAll('.container').forEach(t => t.style.display = "none");
-    // mostra a tela desejada
-    document.getElementById(telaId).style.display = "flex";
+    document.getElementById(tela).style.display = "flex";
 
-    // quando abrir o mapa principal, atualiza as mesas
-    if(telaId === "mapa"){
-        document.getElementById("btnReservar").style.display = "none"; // esconde o botão
+    if (tela === "mapa") {
+        document.getElementById("btnReservar").style.display = "none";
         mostrarMesas();
     }
 
-    // quando retornar para dadosReserva, esconde botões (serão mostrados apenas após consultar)
-    if(telaId === "dadosReserva"){
-        // botões visíveis somente se reservaAtual estiver definida
+    if (tela === "dadosReserva") {
         document.getElementById("btnEditar").style.display = reservaAtual ? "inline-block" : "none";
         document.getElementById("btnCancelar").style.display = reservaAtual ? "inline-block" : "none";
     }
 }
 
-/* ---------------- Mostrar mesas (fluxo de nova reserva) ---------------- */
-function mostrarMesas(){
+/* ---------------- Mostrar Mesas ---------------- */
+function mostrarMesas() {
     const horario = document.getElementById("horario").value;
     const div = document.getElementById("mapaMesas");
     div.innerHTML = "";
     horarioEscolhido = horario;
 
-    // posições percentuais (mantive as mesmas do seu layout)
     const pos = [
         {x: 13, y: 12.3},{x: 26.2, y: 12.3},{x: 39.4, y: 12.3},
         {x: 64.5, y: 12.3},{x: 77.7, y: 12.3},{x: 90, y: 12.3},
@@ -332,144 +336,138 @@ function mostrarMesas(){
         const mesa = document.createElement("div");
         mesa.className = "mesa " + (ocupada ? "ocupada" : "disponivel");
         mesa.innerText = i + 1;
-
         mesa.style.left = pos[i].x + "%";
-        mesa.style.top  = pos[i].y + "%";
+        mesa.style.top = pos[i].y + "%";
 
-        // ao clicar, seleciona mesa (somente se não ocupada)
-        mesa.onclick = () => selecionarMesa(i);
+        if (!ocupada) mesa.onclick = () => selecionarMesa(i);
+
         div.appendChild(mesa);
     });
 }
 
-/* ---------------- Selecionar mesa (nova reserva) ---------------- */
-function selecionarMesa(i){
-    if(mesasPorHorario[horarioEscolhido][i]){
-        alert("Mesa ocupada!");
-        return;
-    }
-
+/* ---------------- Selecionar Mesa ---------------- */
+function selecionarMesa(i) {
     mesaEscolhida = i;
 
-    // remove destaque de todas
-    document.querySelectorAll("#mapaMesas .mesa").forEach(m => 
-        m.style.border = "2px solid rgba(255,255,255,0.3)"
-    );
+    document.querySelectorAll("#mapaMesas .mesa").forEach(m => {
+        m.style.border = "2px solid rgba(255,255,255,0.3)";
+    });
 
-    // destaque na selecionada
-    document.querySelectorAll("#mapaMesas .mesa")[i].style.border = "3px solid #d4af37";
+    const mesas = document.querySelectorAll("#mapaMesas .mesa");
+    mesas[i].style.border = "3px solid #d4af37";
+
     document.getElementById("btnReservar").style.display = "inline-block";
 }
 
-/* ---------------- Finalizar reserva (criar) ---------------- */
-function finalizarReserva(){
-    const nome  = document.getElementById("nome").value.trim();
-    const email = document.getElementById("email").value.trim();
+/* ---------------- Finalizar Reserva ---------------- */
+function finalizarReserva() {
+    const nome = document.getElementById("nome").value.trim();
+    const emailRaw = document.getElementById("email").value.trim();
     const senha = document.getElementById("senha").value.trim();
 
-    // validação simples
-    if(!nome || !email || !senha){
-        alert("Preencha tudo!");
-        return;
-    }
+    if (!nome || !emailRaw || !senha) return alert("Preencha todos os campos!");
 
-    if(mesaEscolhida === null || horarioEscolhido === null){
-        alert("Selecione uma mesa e horário!");
-        return;
-    }
+    const email = emailRaw.toLowerCase();
+
+    if (reservas.some(r => r.email === email))
+        return alert("Já existe uma reserva com este email!");
 
     const codigo = "GT-" + Math.floor(100000 + Math.random()*900000);
 
-    // Marca mesa ocupada no horário selecionado
     mesasPorHorario[horarioEscolhido][mesaEscolhida] = true;
 
-    // cria objeto reserva
     reservas.push({
-        nome, email, senha,
-        mesa: mesaEscolhida+1, // armazeno em formato humano (1-based)
+        nome,
+        email,
+        emailRaw,
+        senha,
+        mesa: mesaEscolhida + 1,
         horario: horarioEscolhido,
         codigo
     });
 
-    // salva no localStorage
     salvarDados();
 
-    // mostra mensagem de agradecimento com dados
-    document.getElementById("msgAgradecimento").innerHTML = `
-        Obrigado, <b>${nome}</b>!<br>
-        Mesa: <b>${mesaEscolhida+1}</b><br>
-        Horário: <b>${horarioEscolhido}</b><br>
-        Código: <b>${codigo}</b>
-    `;
+    document.getElementById("msgAgradecimento").innerHTML =
+        `Obrigado, <b>${nome}</b>!<br>
+         Mesa: <b>${mesaEscolhida+1}</b><br>
+         Horário: <b>${horarioEscolhido}</b><br>
+         Código: <b>${codigo}</b>`;
 
-    // reseta seleção de reserva nova
-    mesaEscolhida = null;
-    horarioEscolhido = null;
-
-    // vai para tela de confirmação
     irPara("agradecimento");
 }
 
-/* ---------------- Consulta de reserva ---------------- */
-function consultarReserva(){
-    // pega valores dos inputs (referenciando corretamente)
-    const email = document.getElementById("emailLogin").value.trim();
+/* ---------------- Consulta de Reserva ---------------- */
+function consultarReserva() {
+    const email = document.getElementById("emailLogin").value.trim().toLowerCase();
     const senha = document.getElementById("senhaLogin").value.trim();
 
-    // busca a reserva
-    const reserva = reservas.find(r => r.email == email && r.senha == senha);
+    const r = reservas.find(x => x.email === email && x.senha === senha);
 
-    if(!reserva){
-        alert("Reserva não encontrada!");
-        return;
-    }
+    if (!r) return alert("Reserva não encontrada!");
 
-    // guarda a reserva atual para operações futuras (editar / cancelar)
-    reservaAtual = reserva;
+    reservaAtual = r;
 
-    // exibe informações na tela
-    document.getElementById("infoReserva").innerHTML = `
-        Nome: <b>${reserva.nome}</b><br>
-        Mesa: <b>${reserva.mesa}</b><br>
-        Horário: <b>${reserva.horario}</b><br>
-        Código: <b>${reserva.codigo}</b>
-    `;
+    document.getElementById("infoReserva").innerHTML =
+        `Nome: <b>${r.nome}</b><br>
+         Email: <b>${r.emailRaw}</b><br>
+         Mesa: <b>${r.mesa}</b><br>
+         Horário: <b>${r.horario}</b><br>
+         Código: <b>${r.codigo}</b>`;
 
-    // mostra botões de editar e cancelar
-    document.getElementById("btnEditar").style.display = "inline-block";
-    document.getElementById("btnCancelar").style.display = "inline-block";
-
-    // vai para tela de dados
     irPara("dadosReserva");
 }
 
-/* ---------------- Abrir Edição ---------------- */
-function abrirEdicao(){
-    if(!reservaAtual) return;
+/* ---------------- ADMIN LOGIN ---------------- */
+function loginAdmin() {
+    const u = document.getElementById("admUser").value.trim();
+    const p = document.getElementById("admPass").value.trim();
 
-    // preenche campo nome com o valor atual
+    if (u === "adm" && p === "0000") {
+        irPara("adminPainel");
+    } else {
+        alert("Credenciais inválidas!");
+    }
+}
+
+/* ---------------- LISTAR RESERVAS DO ADMIN ---------------- */
+function listarReservasHorario() {
+    const horario = document.getElementById("adminHorarios").value;
+    const div = document.getElementById("listaAdmin");
+
+    const lista = reservas.filter(r => r.horario === horario);
+
+    if (lista.length === 0) {
+        div.innerHTML = "<br><b>Nenhuma reserva neste horário.</b>";
+        return;
+    }
+
+    let html = "<br>";
+
+    lista.forEach(r => {
+        html += `• <b>${r.nome}</b> — Mesa <b>${r.mesa}</b> — Código: <b>${r.codigo}</b><br>`;
+    });
+
+    div.innerHTML = html;
+}
+
+/* ---------------- Abrir edição ---------------- */
+function abrirEdicao() {
     document.getElementById("editNome").value = reservaAtual.nome;
-
-    // define o horário do select para o horário atual da reserva
     document.getElementById("editHorario").value = reservaAtual.horario;
 
-    // define selectedMesaEdit como a mesa atual - 1 (0-based)
     selectedMesaEdit = reservaAtual.mesa - 1;
 
-    // mostra mapa de edição e marca mesas (essa função vai destacar a mesa atual)
     mostrarMesasEdicao();
-
-    // vai para a tela de edição
     irPara("editarReserva");
 }
 
-/* ---------------- Mostrar mesas para edição ---------------- */
-function mostrarMesasEdicao(){
+/* ---------------- Mostrar mesas na edição ---------------- */
+function mostrarMesasEdicao() {
     const horario = document.getElementById("editHorario").value;
     const div = document.getElementById("mapaMesasEdicao");
     div.innerHTML = "";
 
-    // mesmas posições do mapa principal
     const pos = [
         {x: 13, y: 12.3},{x: 26.2, y: 12.3},{x: 39.4, y: 12.3},
         {x: 64.5, y: 12.3},{x: 77.7, y: 12.3},{x: 90, y: 12.3},
@@ -478,37 +476,26 @@ function mostrarMesasEdicao(){
     ];
 
     mesasPorHorario[horario].forEach((ocupada, i) => {
-
-        // Se esta mesa está ocupada no horário selecionado e NÃO é a mesa da própria reservaAtual,
-        // então ela fica bloqueada (ocupada). Isso permite ao usuário manter sua própria mesa
-        // caso ele não mude o horário/mesa.
-        const isOwnMesaHere = (reservaAtual && reservaAtual.horario === horario && reservaAtual.mesa - 1 === i);
-        const bloqueada = ocupada && !isOwnMesaHere;
+        const own = (reservaAtual.horario === horario && reservaAtual.mesa - 1 === i);
+        const bloqueada = ocupada && !own;
 
         const mesa = document.createElement("div");
         mesa.className = "mesa " + (bloqueada ? "ocupada" : "disponivel");
         mesa.innerText = i + 1;
 
         mesa.style.left = pos[i].x + "%";
-        mesa.style.top  = pos[i].y + "%";
+        mesa.style.top = pos[i].y + "%";
 
-        // se não estiver bloqueada, adiciona comportamento de clique para selecionar
-        if(!bloqueada){
+        if (!bloqueada) {
             mesa.onclick = () => {
-                // limpa bordas
                 document.querySelectorAll("#mapaMesasEdicao .mesa")
                     .forEach(m => m.style.border = "2px solid rgba(255,255,255,0.3)");
-
-                // destaca a mesa clicada
                 mesa.style.border = "3px solid #d4af37";
-
-                // salva a seleção (0-based)
                 selectedMesaEdit = i;
             };
         }
 
-        // se a mesa é a mesa atual da reserva, já aplica destaque inicial
-        if(selectedMesaEdit === i && !bloqueada){
+        if (selectedMesaEdit === i && !bloqueada) {
             mesa.style.border = "3px solid #d4af37";
         }
 
@@ -516,82 +503,45 @@ function mostrarMesasEdicao(){
     });
 }
 
-/* ---------------- Salvar Edição (Update) ---------------- */
-function salvarEdicao(){
-    // validações
+/* ---------------- Salvar edição ---------------- */
+function salvarEdicao() {
     const novoNome = document.getElementById("editNome").value.trim();
     const novoHorario = document.getElementById("editHorario").value;
 
-    if(!novoNome){
-        alert("Digite seu nome!");
-        return;
-    }
+    const antigoHorario = reservaAtual.horario;
+    const antigaMesa = reservaAtual.mesa - 1;
 
-    if(selectedMesaEdit === null || selectedMesaEdit === undefined){
-        alert("Selecione uma mesa para a nova reserva!");
-        return;
-    }
-
-    // Guarda dados antigos para manipulação das mesas
-    const horarioAntigo = reservaAtual.horario;
-    const mesaAntigaIndex = reservaAtual.mesa - 1;
-
-    // Se o usuário alterou horario ou mesa, atualizamos as marcações:
-    // 1) Liberar a mesa antiga (no horário antigo)
-    mesasPorHorario[horarioAntigo][mesaAntigaIndex] = false;
-
-    // 2) Marcar a nova mesa como ocupada no novo horário
+    mesasPorHorario[antigoHorario][antigaMesa] = false;
     mesasPorHorario[novoHorario][selectedMesaEdit] = true;
 
-    // 3) Atualizar os dados da reserva no array
     reservaAtual.nome = novoNome;
     reservaAtual.horario = novoHorario;
-    reservaAtual.mesa = selectedMesaEdit + 1; // salva como 1-based
+    reservaAtual.mesa = selectedMesaEdit + 1;
 
-    // 4) Salva no localStorage
     salvarDados();
 
-    // 5) Atualiza interface: exibe mensagem e volta ao início
-    alert("Reserva atualizada com sucesso!");
-
-    // limpa variáveis de edição
-    reservaAtual = null;
-    selectedMesaEdit = null;
-
-    // voltar para tela inicial (ou você pode ir para dadosReserva se preferir)
+    alert("Reserva alterada com sucesso!");
     irPara("inicio");
 }
 
-/* ---------------- Cancelar Reserva (Delete) ---------------- */
-function cancelarReserva(){
-    if(!reservaAtual) return;
+/* ---------------- Cancelar reserva ---------------- */
+function cancelarReserva() {
+    const h = reservaAtual.horario;
+    const m = reservaAtual.mesa - 1;
 
-    if(!confirm("Tem certeza que deseja cancelar sua reserva?")){
-        return;
-    }
-
-    // libera a mesa no horário da reserva
-    const horario = reservaAtual.horario;
-    const mesaIndex = reservaAtual.mesa - 1;
-    mesasPorHorario[horario][mesaIndex] = false;
-
-    // remove a reserva do array (filtra pelo código)
+    mesasPorHorario[h][m] = false;
     reservas = reservas.filter(r => r.codigo !== reservaAtual.codigo);
 
-    // salva mudanças
     salvarDados();
 
-    alert("Reserva cancelada com sucesso!");
-
-    // limpa variáveis e volta ao início
-    reservaAtual = null;
-    selectedMesaEdit = null;
-
+    alert("Reserva cancelada!");
     irPara("inicio");
 }
 
-/* ---------------- Inicialização: mostra tela inicial ---------------- */
+/* Iniciar */
 irPara("inicio");
+
 </script>
+
 </body>
 </html>
