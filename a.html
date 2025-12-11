@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>GastroTech</title>
+
+<style>
+/* ============================================================
+   ======== ESTILOS (CSS) =====================================
+   ============================================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background-color: rgb(34, 9, 1);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+  padding-top: 50px;
+}
+
+h1, h2, h3 {
+  color: #d4af37;
+  text-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+  animation: brilho 3s infinite ease-in-out;
+}
+
+h1 {
+  font-size: 60px;
+  margin-bottom: 40px;
+  letter-spacing: 2px;
+}
+
+/* Contêiner padrão SPA */
+.container {
+  position: relative;
+  width: 1106px;
+  min-height: 510px;
+  margin: 0 auto 40px;
+  background-color: rgba(0,0,0,0.7);
+  border: 2px solid #d4af37;
+  border-radius: 15px;
+  box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+}
+
+button, select, input {
+  background-color: rgb(212, 175, 55);
+  color: #000;
+  border: none;
+  padding: 12px 25px;
+  margin: 10px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: .3s;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+button:hover, select:hover {
+  background-color: #fff;
+  box-shadow: 0 0 20px #d4af37;
+  transform: translateY(-2px);
+}
+
+input {
+  width: 80%;
+  padding: 10px;
+  text-align: center;
+}
+
+/* ============================================================
+   ================ MAPA DE MESAS RESPONSIVO ==================
+   ============================================================ */
+
+#mapaMesas, #mapaMesasEdicao {
+  position: relative;
+  width: 100%;
+  background-image: url('mesas.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 10px;
+  margin-top: 20px;
+  aspect-ratio: 1106 / 510;
+}
+
+#mapaMesas .mesa, #mapaMesasEdicao .mesa {
+  position: absolute;
+}
+
+.mesa {
+  width: 6%;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  background-color: rgb(12, 92, 12);
+  border: 2px solid rgba(255,255,255,0.3);
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  opacity: 0.9;
+  transition: .3s;
+  box-shadow: 0 0 12px rgba(0,255,0,0.3);
+}
+
+.mesa:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 20px rgba(0,255,0,0.6);
+}
+
+.mesa.ocupada {
+  background-color: #a80000;
+  box-shadow: 0 0 20px rgba(255,0,0,0.6);
+}
+
+#btnReservar {
+  margin-top: 20px;
+}
+
+@keyframes brilho {
+  0% { text-shadow: 0 0 10px rgba(34, 9, 1); }
+  50% { text-shadow: 0 0 20px rgb(246, 170, 28); }
+  100% { text-shadow: 0 0 10px rgba(34, 9, 1); }
+}
+
+@media (max-width: 1200px) {
+  .container { width: 94%; }
+  h1 { font-size: 45px; }
+  .mesa { font-size: 13px; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ============================================================
+     ===================== TELAS ================================
+     ============================================================ -->
+
+<!-- Tela Inicial -->
+<div id="inicio" class="container" style="display:flex;">
+    <h1>GastroTech</h1>
+
+    <button onclick="irPara('mapa')">Reservar</button>
+    <button onclick="irPara('loginConsulta')">Consultar Reserva</button>
+
+    <!-- NOVO BOTÃO ADMIN -->
+    <button onclick="irPara('adminLogin')">Admin</button>
+</div>
+
+<!-- =================== TELA LOGIN ADMIN =================== -->
+<div id="adminLogin" class="container">
+    <h2>Área Administrativa</h2>
+
+    <input type="text" id="admUser" placeholder="Usuário"><br>
+    <input type="password" id="admPass" placeholder="Senha"><br>
+
+    <button onclick="loginAdmin()">Entrar</button>
+    <button onclick="irPara('inicio')">Voltar</button>
+</div>
+
+<!-- =================== TELA ADMIN PRINCIPAL =================== -->
+<div id="adminPainel" class="container">
+    <h2>Reservas por Horário</h2>
+
+    <button style="background:#d9534f;" onclick="limparSistema()">🗑 Limpar Sistema</button>
+
+
+    <select id="adminHorarios" onchange="listarReservasHorario()">
+        <option value="" disabled selected>Selecione um horário</option>
+        <option>10h às 11h</option>
+        <option>11h às 12h</option>
+        <option>12h às 13h</option>
+        <option>13h às 14h</option>
+        <option>14h às 15h</option>
+    </select>
+
+    <div id="listaAdmin" style="margin-top:20px; font-size:18px;"></div>
+
+    <button onclick="irPara('inicio')">Voltar ao Início</button>
+</div>
+
+<!-- =================== TELA MAPA =================== -->
+<div id="mapa" class="container">
+    <h2>Escolha o horário</h2>
+
+    <select id="horario" onchange="mostrarMesas()">
+        <option>10h às 11h</option>
+        <option>11h às 12h</option>
+        <option>12h às 13h</option>
+        <option>13h às 14h</option>
+        <option>14h às 15h</option>
+    </select>
+
+    <div id="mapaMesas"></div>
+
+    <button id="btnReservar" style="display:none;" onclick="irPara('cadastro')">Reservar</button>
+    <button onclick="irPara('inicio')">Voltar</button>
+</div>
+
+<!-- =================== CADASTRO =================== -->
+<div id="cadastro" class="container">
+    <h2>Cadastro</h2>
+    <input type="text" id="nome" placeholder="Nome"><br>
+    <input type="email" id="email" placeholder="Email"><br>
+    <input type="password" id="senha" placeholder="Senha"><br>
+    <button onclick="finalizarReserva()">Finalizar Reserva</button>
+</div>
+
+<!-- =================== TELA DE AGRADECIMENTO =================== -->
+<div id="agradecimento" class="container">
+    <h2>Reserva Confirmada!</h2>
+    <p id="msgAgradecimento"></p>
+    <button onclick="irPara('inicio')">Voltar ao Início</button>
+</div>
+
+<!-- =================== LOGIN CONSULTA =================== -->
+<div id="loginConsulta" class="container">
+    <h2>Consultar Reserva</h2>
+    <input type="email" id="emailLogin" placeholder="Email"><br>
+    <input type="password" id="senhaLogin" placeholder="Senha"><br>
+    <button onclick="consultarReserva()">Consultar</button>
+    <button onclick="irPara('inicio')">Voltar</button>
+</div>
+
+<!-- =================== DADOS DA RESERVA =================== -->
+<div id="dadosReserva" class="container">
+    <h2>Minha Reserva</h2>
+    <p id="infoReserva"></p>
+
+    <button id="btnEditar" onclick="abrirEdicao()" style="display:none;">Editar Reserva</button>
+    <button id="btnCancelar" onclick="cancelarReserva()" style="display:none;">Cancelar Reserva</button>
+
+    <button onclick="irPara('inicio')">Voltar</button>
+</div>
+
+<!-- =================== EDITAR RESERVA =================== -->
+<div id="editarReserva" class="container">
+    <h2>Editar Reserva</h2>
+
+    <input type="text" id="editNome" placeholder="Nome"><br>
+
+    <select id="editHorario" onchange="mostrarMesasEdicao()">
+        <option>10h às 11h</option>
+        <option>11h às 12h</option>
+        <option>12h às 13h</option>
+        <option>13h às 14h</option>
+        <option>14h às 15h</option>
+    </select>
+
+    <div id="mapaMesasEdicao"></div>
+
+    <button onclick="salvarEdicao()">Salvar Alterações</button>
+    <button onclick="irPara('dadosReserva')">Cancelar</button>
+</div>
+
+<!-- ============================================================
+     ===================== JAVASCRIPT ============================
+     ============================================================ -->
+<script>
+
+/* ---------------- Variáveis globais ---------------- */
+
+const horarios = ["10h às 11h","11h às 12h","12h às 13h","13h às 14h","14h às 15h"];
+
+let mesasPorHorario = {};
+let reservas = [];
+
+let mesaEscolhida = null;
+let horarioEscolhido = null;
+let reservaAtual = null;
+
+let selectedMesaEdit = null;
+
+/* ---------------- Carregar do LocalStorage ---------------- */
+function carregarDados() {
+    mesasPorHorario = JSON.parse(localStorage.getItem("mesasPorHorario")) || {};
+    reservas = JSON.parse(localStorage.getItem("reservas")) || [];
+
+    horarios.forEach(h => {
+        if (!mesasPorHorario[h]) mesasPorHorario[h] = Array(12).fill(false);
+    });
+}
+carregarDados();
+
+function salvarDados() {
+    localStorage.setItem("mesasPorHorario", JSON.stringify(mesasPorHorario));
+    localStorage.setItem("reservas", JSON.stringify(reservas));
+}
+
+/* ---------------- Navegação SPA ---------------- */
+function irPara(tela) {
+    document.querySelectorAll('.container').forEach(t => t.style.display = "none");
+    document.getElementById(tela).style.display = "flex";
+
+    if (tela === "mapa") {
+        document.getElementById("btnReservar").style.display = "none";
+        mostrarMesas();
+    }
+
+    if (tela === "dadosReserva") {
+        document.getElementById("btnEditar").style.display = reservaAtual ? "inline-block" : "none";
+        document.getElementById("btnCancelar").style.display = reservaAtual ? "inline-block" : "none";
+    }
+}
+
+/* ---------------- Mostrar Mesas ---------------- */
+function mostrarMesas() {
+    const horario = document.getElementById("horario").value;
+    const div = document.getElementById("mapaMesas");
+    div.innerHTML = "";
+    horarioEscolhido = horario;
+
+    const pos = [
+        {x: 13, y: 12.3},{x: 26.2, y: 12.3},{x: 39.4, y: 12.3},
+        {x: 64.5, y: 12.3},{x: 77.7, y: 12.3},{x: 90, y: 12.3},
+
+        {x: 13, y: 52.5},{x: 26.2, y: 52.5},{x: 39.4, y: 52.5},
+        {x: 63.6, y: 52.5},{x: 76.8, y: 52.5},{x: 90, y: 52.5},
+    ];
+
+    mesasPorHorario[horario].forEach((ocupada, i) => {
+        const mesa = document.createElement("div");
+        mesa.className = "mesa " + (ocupada ? "ocupada" : "disponivel");
+        mesa.innerText = i + 1;
+        mesa.style.left = pos[i].x + "%";
+        mesa.style.top = pos[i].y + "%";
+
+        if (!ocupada) mesa.onclick = () => selecionarMesa(i);
+
+        div.appendChild(mesa);
+    });
+}
+
+/* ---------------- Selecionar Mesa ---------------- */
+function selecionarMesa(i) {
+    mesaEscolhida = i;
+
+    document.querySelectorAll("#mapaMesas .mesa").forEach(m => {
+        m.style.border = "2px solid rgba(255,255,255,0.3)";
+    });
+
+    const mesas = document.querySelectorAll("#mapaMesas .mesa");
+    mesas[i].style.border = "3px solid #d4af37";
+
+    document.getElementById("btnReservar").style.display = "inline-block";
+}
+
+/* ---------------- Finalizar Reserva ---------------- */
+function finalizarReserva() {
+    const nome = document.getElementById("nome").value.trim();
+    const emailRaw = document.getElementById("email").value.trim();
+    const senha = document.getElementById("senha").value.trim();
+
+    if (!nome || !emailRaw || !senha) return alert("Preencha todos os campos!");
+
+    const email = emailRaw.toLowerCase();
+
+    if (reservas.some(r => r.email === email))
+        return alert("Já existe uma reserva com este email!");
+
+    const codigo = "GT-" + Math.floor(100000 + Math.random()*900000);
+
+    mesasPorHorario[horarioEscolhido][mesaEscolhida] = true;
+
+    reservas.push({
+        nome,
+        email,
+        emailRaw,
+        senha,
+        mesa: mesaEscolhida + 1,
+        horario: horarioEscolhido,
+        codigo
+    });
+
+    salvarDados();
+
+    document.getElementById("msgAgradecimento").innerHTML =
+        `Obrigado, <b>${nome}</b>!<br>
+         Mesa: <b>${mesaEscolhida+1}</b><br>
+         Horário: <b>${horarioEscolhido}</b><br>
+         Código: <b>${codigo}</b>`;
+
+    irPara("agradecimento");
+}
+
+/* ---------------- Consulta de Reserva ---------------- */
+function consultarReserva() {
+    const email = document.getElementById("emailLogin").value.trim().toLowerCase();
+    const senha = document.getElementById("senhaLogin").value.trim();
+
+    const r = reservas.find(x => x.email === email && x.senha === senha);
+
+    if (!r) return alert("Reserva não encontrada!");
+
+    reservaAtual = r;
+
+    document.getElementById("infoReserva").innerHTML =
+        `Nome: <b>${r.nome}</b><br>
+         Email: <b>${r.emailRaw}</b><br>
+         Mesa: <b>${r.mesa}</b><br>
+         Horário: <b>${r.horario}</b><br>
+         Código: <b>${r.codigo}</b>`;
+
+    irPara("dadosReserva");
+}
+
+/* ---------------- ADMIN LOGIN ---------------- */
+function loginAdmin() {
+    const u = document.getElementById("admUser").value.trim();
+    const p = document.getElementById("admPass").value.trim();
+
+    if (u === "adm" && p === "0000") {
+        irPara("adminPainel");
+    } else {
+        alert("Credenciais inválidas!");
+    }
+}
+
+/* ---------------- LISTAR RESERVAS DO ADMIN ---------------- */
+function listarReservasHorario() {
+    const horario = document.getElementById("adminHorarios").value;
+    const div = document.getElementById("listaAdmin");
+
+    const lista = reservas.filter(r => r.horario === horario);
+
+    if (lista.length === 0) {
+        div.innerHTML = "<br><b>Nenhuma reserva neste horário.</b>";
+        return;
+    }
+
+    let html = "<br>";
+
+    lista.forEach(r => {
+        html += `• <b>${r.nome}</b> — Mesa <b>${r.mesa}</b> — Código: <b>${r.codigo}</b>
+         <button style="padding:5px 10px; background:#a80000; color:white; font-size:14px;"
+                 onclick="excluirUsuario('${r.email}')">Excluir Usuário</button><br><br>`;
+    });
+
+    div.innerHTML = html;
+}
+
+/* ---------------- Abrir edição ---------------- */
+function abrirEdicao() {
+    document.getElementById("editNome").value = reservaAtual.nome;
+    document.getElementById("editHorario").value = reservaAtual.horario;
+
+    selectedMesaEdit = reservaAtual.mesa - 1;
+
+    mostrarMesasEdicao();
+    irPara("editarReserva");
+}
+
+/* ---------------- Mostrar mesas na edição ---------------- */
+function mostrarMesasEdicao() {
+    const horario = document.getElementById("editHorario").value;
+    const div = document.getElementById("mapaMesasEdicao");
+    div.innerHTML = "";
+
+    const pos = [
+        {x: 13, y: 12.3},{x: 26.2, y: 12.3},{x: 39.4, y: 12.3},
+        {x: 64.5, y: 12.3},{x: 77.7, y: 12.3},{x: 90, y: 12.3},
+        {x: 13, y: 52.5},{x: 26.2, y: 52.5},{x: 39.4, y: 52.5},
+        {x: 63.6, y: 52.5},{x: 76.8, y: 52.5},{x: 90, y: 52.5},
+    ];
+
+    mesasPorHorario[horario].forEach((ocupada, i) => {
+        const own = (reservaAtual.horario === horario && reservaAtual.mesa - 1 === i);
+        const bloqueada = ocupada && !own;
+
+        const mesa = document.createElement("div");
+        mesa.className = "mesa " + (bloqueada ? "ocupada" : "disponivel");
+        mesa.innerText = i + 1;
+
+        mesa.style.left = pos[i].x + "%";
+        mesa.style.top = pos[i].y + "%";
+
+        if (!bloqueada) {
+            mesa.onclick = () => {
+                document.querySelectorAll("#mapaMesasEdicao .mesa")
+                    .forEach(m => m.style.border = "2px solid rgba(255,255,255,0.3)");
+                mesa.style.border = "3px solid #d4af37";
+                selectedMesaEdit = i;
+            };
+        }
+
+        if (selectedMesaEdit === i && !bloqueada) {
+            mesa.style.border = "3px solid #d4af37";
+        }
+
+        div.appendChild(mesa);
+    });
+}
+
+/* ---------------- Salvar edição ---------------- */
+function salvarEdicao() {
+    const novoNome = document.getElementById("editNome").value.trim();
+    const novoHorario = document.getElementById("editHorario").value;
+
+    const antigoHorario = reservaAtual.horario;
+    const antigaMesa = reservaAtual.mesa - 1;
+
+    mesasPorHorario[antigoHorario][antigaMesa] = false;
+    mesasPorHorario[novoHorario][selectedMesaEdit] = true;
+
+    reservaAtual.nome = novoNome;
+    reservaAtual.horario = novoHorario;
+    reservaAtual.mesa = selectedMesaEdit + 1;
+
+    salvarDados();
+
+    alert("Reserva alterada com sucesso!");
+    irPara("inicio");
+}
+
+/* ---------------- Cancelar reserva ---------------- */
+function cancelarReserva() {
+    const h = reservaAtual.horario;
+    const m = reservaAtual.mesa - 1;
+
+    mesasPorHorario[h][m] = false;
+    reservas = reservas.filter(r => r.codigo !== reservaAtual.codigo);
+
+    salvarDados();
+
+    alert("Reserva cancelada!");
+    irPara("inicio");
+}
+
+function excluirUsuario(email) {
+    if (!confirm("Tem certeza que deseja excluir este usuário e sua reserva?")) return;
+
+    const r = reservas.find(x => x.email === email);
+    if (!r) return;
+
+    // liberar mesa
+    mesasPorHorario[r.horario][r.mesa - 1] = false;
+
+    // remover do vetor de reservas
+    reservas = reservas.filter(x => x.email !== email);
+
+    salvarDados();
+
+    alert("Usuário removido com sucesso!");
+
+    // recarregar lista
+    listarReservasHorario();
+}
+
+function limparSistema() {
+    if (!confirm("⚠ ATENÇÃO!\n\nIsso irá excluir TODOS os usuários, reservas e liberar todas as mesas.\n\nDeseja continuar?"))
+        return;
+
+    // limpa vetores
+    reservas = [];
+
+    horarios.forEach(h => {
+        mesasPorHorario[h] = Array(12).fill(false);
+    });
+
+    salvarDados();
+
+    alert("Sistema limpo com sucesso!");
+
+    // limpa lista do admin caso ele esteja vendo
+    document.getElementById("listaAdmin").innerHTML = "";
+}
+
+
+/* Iniciar */
+irPara("inicio");
+
+</script>
+
+</body>
+</html>
