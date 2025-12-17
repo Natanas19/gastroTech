@@ -1,279 +1,7 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>GastroTech</title>
-
-<style>
 /* ============================================================
-   ======== ESTILOS (CSS) =====================================
-   ============================================================ */
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
-}
-
-body {
-  background-color: rgb(34, 9, 1);
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  text-align: center;
-  padding-top: 50px;
-}
-
-h1, h2, h3 {
-  color: #d4af37;
-  text-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
-  animation: brilho 3s infinite ease-in-out;
-}
-
-h1 {
-  font-size: 60px;
-  margin-bottom: 40px;
-  letter-spacing: 2px;
-}
-
-/* Contêiner padrão SPA */
-.container {
-  position: relative;
-  width: 1106px;
-  min-height: 510px;
-  margin: 0 auto 40px;
-  background-color: rgba(0,0,0,0.7);
-  border: 2px solid #d4af37;
-  border-radius: 15px;
-  box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 30px;
-}
-
-button, select, input {
-  background-color: rgb(212, 175, 55);
-  color: #000;
-  border: none;
-  padding: 12px 25px;
-  margin: 10px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: .3s;
-  box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
-}
-
-button:hover, select:hover {
-  background-color: #fff;
-  box-shadow: 0 0 20px #d4af37;
-  transform: translateY(-2px);
-}
-
-input {
-  width: 80%;
-  padding: 10px;
-  text-align: center;
-}
-
-/* ============================================================
-   ================ MAPA DE MESAS RESPONSIVO ==================
-   ============================================================ */
-
-#mapaMesas, #mapaMesasEdicao {
-  position: relative;
-  width: 100%;
-  background-image: url('mesas.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  border-radius: 10px;
-  margin-top: 20px;
-  aspect-ratio: 1106 / 510;
-}
-
-#mapaMesas .mesa, #mapaMesasEdicao .mesa {
-  position: absolute;
-}
-
-.mesa {
-  width: 6%;
-  aspect-ratio: 1/1;
-  border-radius: 50%;
-  background-color: rgb(12, 92, 12);
-  border: 2px solid rgba(255,255,255,0.3);
-  color: white;
-  font-weight: bold;
-  font-size: 16px;
-  cursor: pointer;
-  opacity: 0.9;
-  transition: .3s;
-  box-shadow: 0 0 12px rgba(0,255,0,0.3);
-}
-
-.mesa:hover {
-  transform: scale(1.15);
-  box-shadow: 0 0 20px rgba(0,255,0,0.6);
-}
-
-.mesa.ocupada {
-  background-color: #a80000;
-  box-shadow: 0 0 20px rgba(255,0,0,0.6);
-}
-
-#btnReservar {
-  margin-top: 20px;
-}
-
-@keyframes brilho {
-  0% { text-shadow: 0 0 10px rgba(34, 9, 1); }
-  50% { text-shadow: 0 0 20px rgb(246, 170, 28); }
-  100% { text-shadow: 0 0 10px rgba(34, 9, 1); }
-}
-
-@media (max-width: 1200px) {
-  .container { width: 94%; }
-  h1 { font-size: 45px; }
-  .mesa { font-size: 13px; }
-}
-</style>
-</head>
-
-<body>
-
-<!-- ============================================================
-     ===================== TELAS ================================
-     ============================================================ -->
-
-<!-- Tela Inicial -->
-<div id="inicio" class="container" style="display:flex;">
-    <h1>GastroTech</h1>
-
-    <button onclick="irPara('mapa')">Reservar</button>
-    <button onclick="irPara('loginConsulta')">Consultar Reserva</button>
-
-    <!-- NOVO BOTÃO ADMIN -->
-    <button onclick="irPara('adminLogin')">Admin</button>
-</div>
-
-<!-- =================== TELA LOGIN ADMIN =================== -->
-<div id="adminLogin" class="container">
-    <h2>Área Administrativa</h2>
-
-    <input type="text" id="admUser" placeholder="Usuário"><br>
-    <input type="password" id="admPass" placeholder="Senha"><br>
-
-    <button onclick="loginAdmin()">Entrar</button>
-    <button onclick="irPara('inicio')">Voltar</button>
-</div>
-
-<!-- =================== TELA ADMIN PRINCIPAL =================== -->
-<div id="adminPainel" class="container">
-    <h2>Reservas por Horário</h2>
-
-    <button style="background:#d9534f;" onclick="limparSistema()">🗑 Limpar Sistema</button>
-
-
-    <select id="adminHorarios" onchange="listarReservasHorario()">
-        <option value="" disabled selected>Selecione um horário</option>
-        <option>10h às 11h</option>
-        <option>11h às 12h</option>
-        <option>12h às 13h</option>
-        <option>13h às 14h</option>
-        <option>14h às 15h</option>
-    </select>
-
-    <div id="listaAdmin" style="margin-top:20px; font-size:18px;"></div>
-
-    <button onclick="irPara('inicio')">Voltar ao Início</button>
-</div>
-
-<!-- =================== TELA MAPA =================== -->
-<div id="mapa" class="container">
-    <h2>Escolha o horário</h2>
-
-    <select id="horario" onchange="mostrarMesas()">
-        <option>10h às 11h</option>
-        <option>11h às 12h</option>
-        <option>12h às 13h</option>
-        <option>13h às 14h</option>
-        <option>14h às 15h</option>
-    </select>
-
-    <div id="mapaMesas"></div>
-
-    <button id="btnReservar" style="display:none;" onclick="irPara('cadastro')">Reservar</button>
-    <button onclick="irPara('inicio')">Voltar</button>
-</div>
-
-<!-- =================== CADASTRO =================== -->
-<div id="cadastro" class="container">
-    <h2>Cadastro</h2>
-    <input type="text" id="nome" placeholder="Nome"><br>
-    <input type="email" id="email" placeholder="Email"><br>
-    <input type="password" id="senha" placeholder="Senha"><br>
-    <button onclick="finalizarReserva()">Finalizar Reserva</button>
-</div>
-
-<!-- =================== TELA DE AGRADECIMENTO =================== -->
-<div id="agradecimento" class="container">
-    <h2>Reserva Confirmada!</h2>
-    <p id="msgAgradecimento"></p>
-    <button onclick="irPara('inicio')">Voltar ao Início</button>
-</div>
-
-<!-- =================== LOGIN CONSULTA =================== -->
-<div id="loginConsulta" class="container">
-    <h2>Consultar Reserva</h2>
-    <input type="email" id="emailLogin" placeholder="Email"><br>
-    <input type="password" id="senhaLogin" placeholder="Senha"><br>
-    <button onclick="consultarReserva()">Consultar</button>
-    <button onclick="irPara('inicio')">Voltar</button>
-</div>
-
-<!-- =================== DADOS DA RESERVA =================== -->
-<div id="dadosReserva" class="container">
-    <h2>Minha Reserva</h2>
-    <p id="infoReserva"></p>
-
-    <button id="btnEditar" onclick="abrirEdicao()" style="display:none;">Editar Reserva</button>
-    <button id="btnCancelar" onclick="cancelarReserva()" style="display:none;">Cancelar Reserva</button>
-
-    <button onclick="irPara('inicio')">Voltar</button>
-</div>
-
-<!-- =================== EDITAR RESERVA =================== -->
-<div id="editarReserva" class="container">
-    <h2>Editar Reserva</h2>
-
-    <input type="text" id="editNome" placeholder="Nome"><br>
-
-    <select id="editHorario" onchange="mostrarMesasEdicao()">
-        <option>10h às 11h</option>
-        <option>11h às 12h</option>
-        <option>12h às 13h</option>
-        <option>13h às 14h</option>
-        <option>14h às 15h</option>
-    </select>
-
-    <div id="mapaMesasEdicao"></div>
-
-    <button onclick="salvarEdicao()">Salvar Alterações</button>
-    <button onclick="irPara('dadosReserva')">Cancelar</button>
-</div>
-
-<!-- ============================================================
      ===================== JAVASCRIPT ============================
-     ============================================================ -->
-<script>
+     ============================================================ */
+
 
 /* ---------------- Variáveis globais ---------------- */
 
@@ -397,7 +125,20 @@ function finalizarReserva() {
          Horário: <b>${horarioEscolhido}</b><br>
          Código: <b>${codigo}</b>`;
 
+             // Gerar QR Code com o código da reserva
+        const canvas = document.getElementById("qrCode");
+        canvas.innerHTML = "";
+
+        QRCode.toCanvas(canvas, codigo, {
+         width: 180,
+        color: {
+        dark: "#d4af37",
+        light: "#000000"
+    }
+});
+
     irPara("agradecimento");
+
 }
 
 /* ---------------- Consulta de Reserva ---------------- */
@@ -417,6 +158,19 @@ function consultarReserva() {
          Mesa: <b>${r.mesa}</b><br>
          Horário: <b>${r.horario}</b><br>
          Código: <b>${r.codigo}</b>`;
+
+         // Gerar QR Code na consulta
+const canvas = document.getElementById("qrConsulta");
+canvas.innerHTML = "";
+
+QRCode.toCanvas(canvas, r.codigo, {
+    width: 180,
+    color: {
+        dark: "#d4af37",
+        light: "#000000"
+    }
+});
+
 
     irPara("dadosReserva");
 }
@@ -585,8 +339,3 @@ function limparSistema() {
 
 /* Iniciar */
 irPara("inicio");
-
-</script>
-
-</body>
-</html>

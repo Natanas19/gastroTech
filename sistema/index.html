@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="stylesheet" href="style.css">
+<title>GastroTech</title>
+</head>
+<body>
+<!-- ============================================================
+     ===================== TELAS ================================
+     ============================================================ -->
+
+<!-- Tela Inicial -->
+<div id="inicio" class="container" style="display:flex;">
+    <h1>GastroTech</h1>
+
+    <button onclick="irPara('mapa')">Reservar</button>
+    <button onclick="irPara('loginConsulta')">Consultar Reserva</button>
+
+    <!-- NOVO BOTÃO ADMIN -->
+    <button onclick="irPara('adminLogin')">Admin</button>
+</div>
+
+<!-- =================== TELA LOGIN ADMIN =================== -->
+<div id="adminLogin" class="container">
+    <h2>Área Administrativa</h2>
+
+    <input type="text" id="admUser" placeholder="Usuário"><br>
+    <input type="password" id="admPass" placeholder="Senha"><br>
+
+    <button onclick="loginAdmin()">Entrar</button>
+    <button onclick="irPara('inicio')">Voltar</button>
+</div>
+
+<!-- =================== TELA ADMIN PRINCIPAL =================== -->
+<div id="adminPainel" class="container">
+    <h2>Reservas por Horário</h2>
+
+    <button style="background:#d9534f;" onclick="limparSistema()">🗑 Limpar Sistema</button>
+
+
+    <select id="adminHorarios" onchange="listarReservasHorario()">
+        <option value="" disabled selected>Selecione um horário</option>
+        <option>10h às 11h</option>
+        <option>11h às 12h</option>
+        <option>12h às 13h</option>
+        <option>13h às 14h</option>
+        <option>14h às 15h</option>
+    </select>
+
+    <div id="listaAdmin" style="margin-top:20px; font-size:18px;"></div>
+
+    <button onclick="irPara('inicio')">Voltar ao Início</button>
+</div>
+
+<!-- =================== TELA MAPA =================== -->
+<div id="mapa" class="container">
+    <h2>Escolha o horário</h2>
+
+    <select id="horario" onchange="mostrarMesas()">
+        <option>10h às 11h</option>
+        <option>11h às 12h</option>
+        <option>12h às 13h</option>
+        <option>13h às 14h</option>
+        <option>14h às 15h</option>
+    </select>
+
+    <div id="mapaMesas"></div>
+
+    <button id="btnReservar" style="display:none;" onclick="irPara('cadastro')">Reservar</button>
+    <button onclick="irPara('inicio')">Voltar</button>
+</div>
+
+<!-- =================== CADASTRO =================== -->
+<div id="cadastro" class="container">
+    <h2>Cadastro</h2>
+    <input type="text" id="nome" placeholder="Nome"><br>
+    <input type="email" id="email" placeholder="Email"><br>
+    <input type="password" id="senha" placeholder="Senha"><br>
+    <button onclick="finalizarReserva()">Finalizar Reserva</button>
+</div>
+
+<!-- =================== TELA DE AGRADECIMENTO =================== -->
+<div id="agradecimento" class="container">
+    <h2>Reserva Confirmada!</h2>
+
+    <p id="msgAgradecimento"></p>
+
+    <h3>Seu QR Code</h3>
+    <canvas id="qrCode"></canvas>
+
+    <button onclick="irPara('inicio')">Voltar ao Início</button>
+</div>
+
+<!-- =================== LOGIN CONSULTA =================== -->
+<div id="loginConsulta" class="container">
+    <h2>Consultar Reserva</h2>
+    <input type="email" id="emailLogin" placeholder="Email"><br>
+    <input type="password" id="senhaLogin" placeholder="Senha"><br>
+    <button onclick="consultarReserva()">Consultar</button>
+    <button onclick="irPara('inicio')">Voltar</button>
+</div>
+
+<!-- =================== DADOS DA RESERVA =================== -->
+<div id="dadosReserva" class="container">
+    <h2>Minha Reserva</h2>
+    <p id="infoReserva"></p>
+
+    <h3>QR Code da Reserva</h3>
+    <canvas id="qrConsulta"></canvas>
+
+
+    <button id="btnEditar" onclick="abrirEdicao()" style="display:none;">Editar Reserva</button>
+    <button id="btnCancelar" onclick="cancelarReserva()" style="display:none;">Cancelar Reserva</button>
+
+    <button onclick="irPara('inicio')">Voltar</button>
+</div>
+
+<!-- =================== EDITAR RESERVA =================== -->
+<div id="editarReserva" class="container">
+    <h2>Editar Reserva</h2>
+
+    <input type="text" id="editNome" placeholder="Nome"><br>
+
+    <select id="editHorario" onchange="mostrarMesasEdicao()">
+        <option>10h às 11h</option>
+        <option>11h às 12h</option>
+        <option>12h às 13h</option>
+        <option>13h às 14h</option>
+        <option>14h às 15h</option>
+    </select>
+
+    <div id="mapaMesasEdicao"></div>
+
+    <button onclick="salvarEdicao()">Salvar Alterações</button>
+    <button onclick="irPara('dadosReserva')">Cancelar</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <script src="script.js"></script>
+
+</div>
+</body>
+</html>
